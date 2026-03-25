@@ -5,11 +5,11 @@ from torch import nn
 from mipcandy import HasDevice, Device
 from transformers import GroundingDinoProcessor, AutoModelForZeroShotObjectDetection
 
-from sort_screws_v2.dataset import CaseLabel
+from sort_screws_v2.data import CaseLabel
 
 
-class PreLabeler(HasDevice):
-    def __init__(self, classes: Sequence[str], *, model_id: str = "IDEA-Research/grounding-dino-base",
+class Locator(HasDevice):
+    def __init__(self, classes: Sequence[str], *, model_id: str = "IDEA-Research/grounding-dino-tiny",
                  box_threshold: float = .3, text_threshold: float = .25, device: Device = "cpu") -> None:
         super().__init__(device)
         self.classes: tuple[str, ...] = tuple(classes)
@@ -23,7 +23,7 @@ class PreLabeler(HasDevice):
         if not batch:
             x = x.unsqueeze(0)
         b, c, h, w = x.shape
-        x = self._processor(x, ".".join(self.classes) + ".", return_tensors="pt")
+        x = self._processor(x, ".".join(self.classes) + ".", return_tensors="pt").to(self._device)
         outputs = self._model(**x)
         outputs = self._processor.post_process_grounded_object_detection(
             outputs, x.input_ids, self.box_threshold, self.text_threshold, target_sizes=[(c, h, w)] * b

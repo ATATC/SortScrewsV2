@@ -13,7 +13,7 @@ authors = [
     { name = "Project Neura", email = "central@projectneura.org" },
     { name = "Tianhao Fu", email = "terry.fu@projectneura.org" }
 ]
-dependencies = ["mipcandy", "opencv-python", "transformers"]
+dependencies = ["mipcandy", "opencv-python", "transformers", "pyserial", "sort-screws"]
 
 [tool.hatch.build.targets.sdist]
 only-include = ["sort_screws"]

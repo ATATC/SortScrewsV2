@@ -1,0 +1,8 @@
+__pycache__
+main.py
+build
+*.egg-info
+dist
+SortScrewsV2
+SortScrewsV2.zip
+trainer

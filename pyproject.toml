@@ -1,0 +1,27 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "sort-screws"
+version = "0.0.1"
+description = "Screw Sorting Dataset"
+license = "Apache-2.0"
+readme = "README.md"
+requires-python = ">=3.12"
+authors = [
+    { name = "Project Neura", email = "central@projectneura.org" },
+    { name = "Tianhao Fu", email = "terry.fu@projectneura.org" }
+]
+dependencies = ["mipcandy", "opencv-python", "transformers"]
+
+[tool.hatch.build.targets.sdist]
+only-include = ["sort_screws"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["sort_screws"]
+
+[project.urls]
+Homepage = "https://github.com/ATATC/SortScrews"
+Documentation = "https://github.com/ATATC/SortScrews"
+Repository = "https://github.com/ATATC/SortScrews"

@@ -11,13 +11,15 @@ from torchvision.transforms import Resize
 from sort_screws_v2 import Locator
 
 
+GEARS: list[int] = [-39, -22, 0, 22, 39, 50]
+
+
 class Predictor(Camera, HasDevice):
     def __init__(self, experiment_folder: str | PathLike[str], *, device: Device = "cpu") -> None:
         Camera.__init__(self, 512)
         HasDevice.__init__(self, device)
         self.predictor: ResNetPredictor = ResNetPredictor(str(experiment_folder), (3, 512, 512),
                                                           device=device)
-        self.locator: Locator = Locator(["pen"], device=device)
         self.paused: bool = False
         self.resize: Resize = Resize(224)
 

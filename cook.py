@@ -10,6 +10,6 @@ if __name__ == "__main__":
     print(device)
     app = Sorter(
         "/dev/cu.usbserial-110", GEARS, f"trainer/{ResNetPredictor.__name__.replace("Predictor", "Trainer")}/final",
-        512, device=device
+        512, 7, device=device
     )
     app.run()

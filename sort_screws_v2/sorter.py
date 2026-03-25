@@ -13,15 +13,16 @@ from sort_screws_v2.controller import Controller
 
 class Sorter(Camera, HasDevice):
     def __init__(self, controller_port: str, gears: Sequence[int], experiment_folder: str | PathLike[str],
-                 roi_size: int, *, resize: int = 224, device: Device = "cpu") -> None:
+                 roi_size: int, num_classes: int, *, resize: int = 224, device: Device = "cpu") -> None:
         Camera.__init__(self, roi_size)
         HasDevice.__init__(self, device)
         self.controller: Controller = Controller(controller_port)
-        if len(gears) != ResNetPredictor.num_classes:
-            raise ValueError(f"Expected {ResNetPredictor.num_classes} gears, got {len(gears)}")
+        if len(gears) != num_classes:
+            raise ValueError(f"Expected {num_classes} gears, got {len(gears)}")
         self.gears: tuple[int, ...] = tuple(gears)
         self.predictor: ResNetPredictor = ResNetPredictor(str(experiment_folder), (3, roi_size, roi_size),
                                                           device=device)
+        self.predictor.num_classes = num_classes
         self.paused: bool = False
         self.resize: Resize = Resize(resize)
 

@@ -3,9 +3,9 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "sort-screws"
+name = "sort-screws-v2"
 version = "0.0.1"
-description = "Screw Sorting Dataset"
+description = "Screw Sorting Solution"
 license = "Apache-2.0"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -16,12 +16,12 @@ authors = [
 dependencies = ["mipcandy", "opencv-python", "transformers", "pyserial", "sort-screws"]
 
 [tool.hatch.build.targets.sdist]
-only-include = ["sort_screws"]
+only-include = ["sort_screws_v2"]
 
 [tool.hatch.build.targets.wheel]
-packages = ["sort_screws"]
+packages = ["sort_screws_v2"]
 
 [project.urls]
-Homepage = "https://github.com/ATATC/SortScrews"
-Documentation = "https://github.com/ATATC/SortScrews"
-Repository = "https://github.com/ATATC/SortScrews"
+Homepage = "https://github.com/ATATC/SortScrewsV2"
+Documentation = "https://github.com/ATATC/SortScrewsV2"
+Repository = "https://github.com/ATATC/SortScrewsV2"

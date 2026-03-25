@@ -3,7 +3,7 @@ from sort_screws import ResNetPredictor
 
 from sort_screws_v2 import Sorter
 
-GEARS: list[int] = [180, -39, -22, 0, 22, 39, 50]
+GEARS: list[int] = [180, 90 - 39, 90 - 22, 90, 90 + 22, 90 + 39, 90 + 50]
 
 if __name__ == "__main__":
     device = auto_device()

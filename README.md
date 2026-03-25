@@ -1,7 +1,7 @@
 # SortScrewV2
 
-In the [first version](https://github.com/ATATC/SortScrews), we proposed a simple dataset for screw classification. Now,
-we want to further explore more robust pipelines of composing screw detection datasets.
+In the [first version](https://github.com/ATATC/SortScrews), we proposed a simple dataset and baseline for screw
+classification. Now we want to extend that baseline into a fully functional solution.
 
 ## Citation
 

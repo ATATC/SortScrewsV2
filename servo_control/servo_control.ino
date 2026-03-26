@@ -4,12 +4,12 @@ Servo myServo;
 
 const int SERVO_PIN = 9;
 const int LED_PIN = 7;
-int currentAngle = 0;
+int currentAngle = 90;
 
 void setup() {
   Serial.begin(9600);
   myServo.attach(SERVO_PIN);
-  myServo.write(0);
+  myServo.write(90);
   pinMode(LED_PIN, OUTPUT);
   Serial.println("Ready.");
 }
@@ -30,7 +30,7 @@ void loop() {
       int angle = anglePart.toInt();
 
       if (angle < 0) angle = 0;
-      if (angle > 180) angle = 180;
+      if (angle > 90) angle = 90;
 
       currentAngle = angle;
       myServo.write(currentAngle);

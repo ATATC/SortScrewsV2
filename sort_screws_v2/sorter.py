@@ -14,14 +14,16 @@ from sort_screws_v2.controller import Controller
 
 class Sorter(Camera, HasDevice):
     def __init__(self, controller_port: str, gears: Sequence[int], experiment_folder: str | PathLike[str],
-                 roi_size: int, num_classes: int, *, resize: int = 224, window_size: int = 30,
-                 device: Device = "cpu") -> None:
+                 roi_size: int, num_classes: int, *, resize: int = 224, window_size: int = 30, servo_offset: int = 0,
+                 default_angle: int = 180, device: Device = "cpu") -> None:
         Camera.__init__(self, roi_size)
         HasDevice.__init__(self, device)
         self.controller: Controller = Controller(controller_port)
         if len(gears) != num_classes:
             raise ValueError(f"Expected {num_classes} gears, got {len(gears)}")
         self.gears: tuple[int, ...] = tuple(gears)
+        self.servo_offset: int = servo_offset
+        self.default_angle: int = default_angle
         self.predictor: ResNetPredictor = ResNetPredictor(str(experiment_folder), (3, roi_size, roi_size),
                                                           device=device)
         self.predictor.num_classes = num_classes
@@ -35,6 +37,9 @@ class Sorter(Camera, HasDevice):
         self.class_id_window.append(class_id)
         class_id_match_ratio = sum(1 for cid in self.class_id_window if cid == class_id) / len(self.class_id_window)
         return np.percentile(self.confidence_window, 90) > 0.8 and class_id_match_ratio >= 0.9
+
+    def calibrate(self, angle: int) -> int:
+        return angle + self.servo_offset
 
     @override
     def job(self, frame: np.ndarray, roi: np.ndarray, bbox: tuple[int, int, int, int]) -> bool:
@@ -51,9 +56,9 @@ class Sorter(Camera, HasDevice):
                         (0, 255, 0), 2, cv2.LINE_AA)
             cv2.imshow("Camera Preview", frame)
             if self.is_class_recognized(confidence, class_id):
-                self.controller.turn_to(self.gears[class_id])
+                self.controller.turn_to(self.calibrate(self.gears[class_id]))
             else:
-                self.controller.reset()
+                self.controller.turn_to(self.calibrate(self.default_angle))
         key = self.wait_key()
         if key == ord(" "):
             self.paused = not self.paused

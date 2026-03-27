@@ -68,7 +68,7 @@ class Sorter(Camera, HasDevice):
                 print("A", class_id)
                 self.turn_to(self.gears[class_id])
             else:
-                self.controller.turn_to(self.default_angle)
+                self.turn_to(self.default_angle)
         key = self.wait_key()
         if key == ord(" "):
             self.paused = not self.paused

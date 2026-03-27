@@ -65,7 +65,6 @@ class Sorter(Camera, HasDevice):
                         (0, 255, 0), 2, cv2.LINE_AA)
             cv2.imshow("Camera Preview", frame)
             if self.is_class_recognized(confidence, class_id):
-                print("A", class_id)
                 self.turn_to(self.gears[class_id])
             else:
                 self.turn_to(self.default_angle)

@@ -15,7 +15,7 @@ from sort_screws_v2.controller import Controller
 
 class Sorter(Camera, HasDevice):
     def __init__(self, controller_port: str, gears: Sequence[int], experiment_folder: str | PathLike[str],
-                 roi_size: int, num_classes: int, *, resize: int = 224, window_size: int = 10, servo_offset: int = 0,
+                 roi_size: int, num_classes: int, *, resize: int = 224, window_size: int = 3, servo_offset: int = 0,
                  default_angle: int = 180, min_interval: float = 1, device: Device = "cpu") -> None:
         Camera.__init__(self, roi_size)
         HasDevice.__init__(self, device)
@@ -50,6 +50,9 @@ class Sorter(Camera, HasDevice):
             self.controller.turn_to(self.calibrate(angle))
             self.last_triggered = time()
 
+    def reset(self) -> None:
+        self.controller.turn_to(self.calibrate(self.default_angle))
+
     @override
     def job(self, frame: np.ndarray, roi: np.ndarray, bbox: tuple[int, int, int, int]) -> bool:
         if not self.paused:
@@ -64,10 +67,9 @@ class Sorter(Camera, HasDevice):
             cv2.putText(frame, f"Class: {class_id} @ {confidence * 100:.2f}%", (40, 80), cv2.FONT_HERSHEY_COMPLEX, 2,
                         (0, 255, 0), 2, cv2.LINE_AA)
             cv2.imshow("Camera Preview", frame)
-            if self.is_class_recognized(confidence, class_id):
+            if self.is_class_recognized(confidence, class_id) and class_id != 0:
+                print(f"Class {class_id} recognized with confidence {confidence * 100:.2f}%")
                 self.turn_to(self.gears[class_id])
-            else:
-                self.turn_to(self.default_angle)
         key = self.wait_key()
         if key == ord(" "):
             self.paused = not self.paused

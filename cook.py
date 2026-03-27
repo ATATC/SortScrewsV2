@@ -1,5 +1,5 @@
 from mipcandy import auto_device
-from sort_screws import ResNetPredictor
+from sort_screws import ConvNeXtPredictor
 
 from sort_screws_v2 import Sorter
 
@@ -9,7 +9,7 @@ if __name__ == "__main__":
     device = auto_device()
     print(device)
     app = Sorter(
-        "/dev/cu.usbserial-110", GEARS, f"trainer/{ResNetPredictor.__name__.replace("Predictor", "Trainer")}/final",
-        512, 10, device=device, servo_offset=-10, default_angle=180
+        "/dev/cu.usbserial-1110", GEARS, f"trainer/{ConvNeXtPredictor.__name__.replace("Predictor", "Trainer")}/final",
+        224, 10, device=device, servo_offset=-10, default_angle=180
     )
     app.run()

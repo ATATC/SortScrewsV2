@@ -29,8 +29,8 @@ void loop() {
       String anglePart = cmd.substring(5);
       int angle = anglePart.toInt();
 
-      if (angle < 0) angle = 0;
-      if (angle > 90) angle = 90;
+      if (angle < 90) angle = 90;
+      if (angle > 180) angle = 180;
 
       currentAngle = angle;
       myServo.write(currentAngle);

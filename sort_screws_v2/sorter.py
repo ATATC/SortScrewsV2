@@ -53,22 +53,23 @@ class Sorter(Camera, HasDevice):
 
     def turn_to(self, device_id: Literal["A", "B"], angle: int) -> None:
         if time() - self.last_triggered > self.min_interval:
-            self.controller.turn_to(device_id, self.calibrate(angle))
+            self.controller.turn_to(device_id, self.calibrate(device_id, angle))
             self.last_triggered = time()
 
     def reset(self, device_id: Literal["A", "B"]) -> None:
-        self.controller.turn_to(device_id, self.calibrate(self.max_angle_a))
+        self.controller.turn_to(device_id, self.calibrate(device_id,
+                                                          self.max_angle_a if device_id == "A" else self.max_angle_b))
 
     def turn_both_to(self, angles: tuple[int | None, int | None]) -> None:
         a, b = angles
         if a is None:
             self.reset("A")
         else:
-            self.turn_to("A", self.calibrate("A", a))
+            self.turn_to("A", a)
         if b is None:
             self.reset("B")
         else:
-            self.turn_to("B", self.calibrate("B", b))
+            self.turn_to("B", b)
 
     @override
     def job(self, frame: np.ndarray, roi: np.ndarray, bbox: tuple[int, int, int, int]) -> bool:

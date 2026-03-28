@@ -21,6 +21,6 @@ if __name__ == "__main__":
     print(device)
     app = Sorter(
         "/dev/cu.usbserial-110", GEARS, f"trainer/{ConvNeXtPredictor.__name__.replace("Predictor", "Trainer")}/final",
-        512, 10, device=device, servo_offset=77
+        512, 10, device=device, offset_a=77, offset_b=70
     )
     app.run()

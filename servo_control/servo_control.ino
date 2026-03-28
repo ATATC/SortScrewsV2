@@ -1,16 +1,23 @@
 #include <Servo.h>
 
-Servo myServo;
+Servo servoA;
+Servo servoB;
 
-const int SERVO_PIN = 9;
-const int LED_PIN = 7;
-int currentAngle = 90;
+const int SERVO_A_PIN = 9;
+const int SERVO_B_PIN = 10;
+int MIN_ANGLE_A = 77;
+int MAX_ANGLE_A = 170;
+int MIN_ANGLE_B = 77;
+int MAX_ANGLE_B = 170;
+int currentAngleA = MIN_ANGLE_A;
+int currentAngleB = MIN_ANGLE_B;
 
 void setup() {
   Serial.begin(9600);
-  myServo.attach(SERVO_PIN);
-  myServo.write(90);
-  pinMode(LED_PIN, OUTPUT);
+  servoA.attach(SERVO_A_PIN);
+  servoA.write(MIN_ANGLE_A);
+  servoB.attach(SERVO_B_PIN);
+  servoB.write(MIN_ANGLE_B);
   Serial.println("Ready.");
 }
 
@@ -19,30 +26,50 @@ void loop() {
     String cmd = Serial.readStringUntil('\n');
     cmd.trim();
 
-    if (cmd.equalsIgnoreCase("reset")) {
-      currentAngle = 0;
-      myServo.write(currentAngle);
-      Serial.println("Servo reset to 0 degrees.");
-      digitalWrite(13, HIGH);
+    if (cmd.equalsIgnoreCase("reset a")) {
+      currentAngleA = MIN_ANGLE_A;
+      servoA.write(currentAngleA);
+      Serial.print("Servo A reset to ");
+      Serial.print(currentAngleA);
+      Serial.println(" degrees.");
     }
-    else if (cmd.startsWith("turn ")) {
-      String anglePart = cmd.substring(5);
+    else if (cmd.equalsIgnoreCase("reset b")) {
+      currentAngleB = MIN_ANGLE_B;
+      servoB.write(currentAngleB);
+      Serial.print("Servo B reset to ");
+      Serial.print(currentAngleB);
+      Serial.println(" degrees.");
+    }
+    else if (cmd.startsWith("turn A ")) {
+      String anglePart = cmd.substring(7);
       int angle = anglePart.toInt();
 
-      if (angle < 90) angle = 90;
-      if (angle > 180) angle = 180;
+      if (angle < MIN_ANGLE_A) angle = MIN_ANGLE_A;
+      if (angle > MAX_ANGLE_A) angle = MAX_ANGLE_A;
 
-      currentAngle = angle;
-      myServo.write(currentAngle);
+      currentAngleA = angle;
+      servoA.write(currentAngleA);
 
-      Serial.print("Servo moved to ");
-      Serial.print(currentAngle);
+      Serial.print("Servo A moved to ");
+      Serial.print(currentAngleA);
       Serial.println(" degrees.");
-      digitalWrite(LED_PIN, HIGH);
+    }
+    else if (cmd.startsWith("turn B ")) {
+      String anglePart = cmd.substring(7);
+      int angle = anglePart.toInt();
+
+      if (angle < MIN_ANGLE_B) angle = MIN_ANGLE_B;
+      if (angle > MAX_ANGLE_B) angle = MAX_ANGLE_B;
+
+      currentAngleB = angle;
+      servoB.write(currentAngleB);
+
+      Serial.print("Servo B moved to ");
+      Serial.print(currentAngleB);
+      Serial.println(" degrees.");
     }
     else {
       Serial.println("Unknown command. Use 'turn <degrees>' or 'reset'.");
-      digitalWrite(LED_PIN, LOW);
     }
   }
 }

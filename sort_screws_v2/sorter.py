@@ -1,7 +1,7 @@
 from collections import deque
 from os import PathLike
 from time import time
-from typing import override, Sequence
+from typing import override, Sequence, Literal
 
 import cv2
 import numpy as np
@@ -16,15 +16,19 @@ from sort_screws_v2.controller import Controller
 class Sorter(Camera, HasDevice):
     def __init__(self, controller_port: str, gears: Sequence[int], experiment_folder: str | PathLike[str],
                  roi_size: int, num_classes: int, *, resize: int = 224, window_size: int = 3, servo_offset: int = 0,
-                 default_angle: int = 180, min_interval: float = 1, device: Device = "cpu") -> None:
-        Camera.__init__(self, roi_size)
+                 min_angle_a: int = 77, max_angle_a: int = 170, min_angle_b: int = 77, max_angle_b: int = 170,
+                 min_interval: float = 1, device: Device = "cpu") -> None:
+        Camera.__init__(self, roi_size, upside_down=True)
         HasDevice.__init__(self, device)
         self.controller: Controller = Controller(controller_port)
         if len(gears) != num_classes:
             raise ValueError(f"Expected {num_classes} gears, got {len(gears)}")
         self.gears: tuple[int, ...] = tuple(gears)
         self.servo_offset: int = servo_offset
-        self.default_angle: int = default_angle
+        self.min_angle_a: int = min_angle_a
+        self.max_angle_a: int = max_angle_a
+        self.min_angle_b: int = min_angle_b
+        self.max_angle_b: int = max_angle_b
         self.predictor: ConvNeXtPredictor = ConvNeXtPredictor(str(experiment_folder), (3, roi_size, roi_size),
                                                               device=device)
         self.predictor.num_classes = num_classes
@@ -45,13 +49,13 @@ class Sorter(Camera, HasDevice):
     def calibrate(self, angle: int) -> int:
         return angle + self.servo_offset
 
-    def turn_to(self, angle: int) -> None:
+    def turn_to(self, device_id: Literal["A", "B"], angle: int) -> None:
         if time() - self.last_triggered > self.min_interval:
-            self.controller.turn_to(self.calibrate(angle))
+            self.controller.turn_to(device_id, self.calibrate(angle))
             self.last_triggered = time()
 
-    def reset(self) -> None:
-        self.controller.turn_to(self.calibrate(self.default_angle))
+    def reset(self, device_id: Literal["A", "B"]) -> None:
+        self.controller.turn_to(device_id, self.calibrate(self.max_angle_a))
 
     @override
     def job(self, frame: np.ndarray, roi: np.ndarray, bbox: tuple[int, int, int, int]) -> bool:
@@ -69,7 +73,7 @@ class Sorter(Camera, HasDevice):
             cv2.imshow("Camera Preview", frame)
             if self.is_class_recognized(confidence, class_id) and class_id != 0:
                 print(f"Class {class_id} recognized with confidence {confidence * 100:.2f}%")
-                self.turn_to(self.gears[class_id])
+                self.turn_to("A" if class_id <= 5 else "B", self.gears[class_id])
         key = self.wait_key()
         if key == ord(" "):
             self.paused = not self.paused

@@ -1,5 +1,6 @@
 from atexit import register
-from time import sleep, time
+from time import time
+from typing import Literal
 
 from serial import Serial
 
@@ -31,8 +32,8 @@ class Controller(object):
         ok, buffer = self.wait_for("degrees.")
         return buffer[-1] if ok else None
 
-    def turn_to(self, deg: int) -> bool:
-        return self.send_command(f"turn {deg}") is not None
+    def turn_to(self, device_id: Literal["A", "B"], deg: int) -> bool:
+        return self.send_command(f"turn {device_id} {deg}") is not None
 
-    def reset(self) -> bool:
-        return self.send_command("reset") is not None
+    def reset(self, device_id: Literal["A", "B"]) -> bool:
+        return self.send_command(f"reset {device_id.lower()}") is not None

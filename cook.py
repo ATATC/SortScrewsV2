@@ -9,7 +9,7 @@ if __name__ == "__main__":
     device = auto_device()
     print(device)
     app = Sorter(
-        "/dev/cu.usbserial-1110", GEARS, f"trainer/{ConvNeXtPredictor.__name__.replace("Predictor", "Trainer")}/final",
-        224, 10, device=device, servo_offset=-10, default_angle=180
+        "/dev/cu.usbserial-110", GEARS, f"trainer/{ConvNeXtPredictor.__name__.replace("Predictor", "Trainer")}/final",
+        224, 10, device=device
     )
     app.run()

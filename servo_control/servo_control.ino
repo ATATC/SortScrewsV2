@@ -7,8 +7,8 @@ const int SERVO_A_PIN = 9;
 const int SERVO_B_PIN = 10;
 int MIN_ANGLE_A = 77;
 int MAX_ANGLE_A = 170;
-int MIN_ANGLE_B = 77;
-int MAX_ANGLE_B = 170;
+int MIN_ANGLE_B = 70;
+int MAX_ANGLE_B = 160;
 int currentAngleA = MIN_ANGLE_A;
 int currentAngleB = MIN_ANGLE_B;
 

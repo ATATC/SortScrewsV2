@@ -14,16 +14,17 @@ from sort_screws_v2.controller import Controller
 
 
 class Sorter(Camera, HasDevice):
-    def __init__(self, controller_port: str, gears: Sequence[int], experiment_folder: str | PathLike[str],
-                 roi_size: int, num_classes: int, *, resize: int = 224, window_size: int = 3, servo_offset: int = 0,
-                 min_angle_a: int = 77, max_angle_a: int = 170, min_angle_b: int = 77, max_angle_b: int = 170,
-                 min_interval: float = 1, device: Device = "cpu") -> None:
+    def __init__(self, controller_port: str, gears: Sequence[tuple[int | None, int | None]],
+                 experiment_folder: str | PathLike[str], roi_size: int, num_classes: int, *, resize: int = 224,
+                 window_size: int = 15, servo_offset: int = 0, min_angle_a: int = 77, max_angle_a: int = 170,
+                 min_angle_b: int = 70, max_angle_b: int = 160, min_interval: float = 1,
+                 device: Device = "cpu") -> None:
         Camera.__init__(self, roi_size, upside_down=True)
         HasDevice.__init__(self, device)
         self.controller: Controller = Controller(controller_port)
         if len(gears) != num_classes:
             raise ValueError(f"Expected {num_classes} gears, got {len(gears)}")
-        self.gears: tuple[int, ...] = tuple(gears)
+        self.gears: list[tuple[int | None, int | None]] = list(gears)
         self.servo_offset: int = servo_offset
         self.min_angle_a: int = min_angle_a
         self.max_angle_a: int = max_angle_a
@@ -73,7 +74,12 @@ class Sorter(Camera, HasDevice):
             cv2.imshow("Camera Preview", frame)
             if self.is_class_recognized(confidence, class_id) and class_id != 0:
                 print(f"Class {class_id} recognized with confidence {confidence * 100:.2f}%")
-                self.turn_to("A" if class_id <= 5 else "B", self.gears[class_id])
+                if class_id <= 5:
+                    self.turn_to("A", self.gears[class_id])
+                    self.reset("B")
+                else:
+                    self.turn_to("B", self.gears[class_id - 5])
+                    self.reset("A")
         key = self.wait_key()
         if key == ord(" "):
             self.paused = not self.paused

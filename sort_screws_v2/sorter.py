@@ -46,21 +46,22 @@ class Sorter(Camera, HasDevice):
         self.confidence_window.append(confidence)
         self.class_id_window.append(class_id)
         class_id_match_ratio = sum(1 for cid in self.class_id_window if cid == class_id) / len(self.class_id_window)
-        return np.percentile(self.confidence_window, 90) > 0.8 and class_id_match_ratio >= 0.6
+        return np.percentile(self.confidence_window, 90) > .8 and class_id_match_ratio >= .75
 
     def calibrate(self, device_id: Literal["A", "B"], angle: int) -> int:
         return angle + (self.offset_a if device_id == "A" else self.offset_b)
 
     def turn_to(self, device_id: Literal["A", "B"], angle: int) -> None:
-        if time() - self.last_triggered > self.min_interval:
-            self.controller.turn_to(device_id, self.calibrate(device_id, angle))
-            self.last_triggered = time()
+        self.controller.turn_to(device_id, self.calibrate(device_id, angle))
+        self.last_triggered = time()
 
     def reset(self, device_id: Literal["A", "B"]) -> None:
         self.controller.turn_to(device_id, self.calibrate(device_id,
                                                           self.max_angle_a if device_id == "A" else self.max_angle_b))
 
     def turn_both_to(self, angles: tuple[int | None, int | None]) -> None:
+        if time() - self.last_triggered < self.min_interval:
+            return
         a, b = angles
         if a is None:
             self.reset("A")

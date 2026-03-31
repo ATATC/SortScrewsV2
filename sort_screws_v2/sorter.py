@@ -16,7 +16,7 @@ from sort_screws_v2.controller import Controller
 class Sorter(Camera, HasDevice):
     def __init__(self, controller_port: str, gears: Sequence[tuple[int | None, int | None]],
                  experiment_folder: str | PathLike[str], roi_size: int, num_classes: int, *, resize: int = 224,
-                 window_size: int = 15, offset_a: int = 0, offset_b: int = 0, min_angle_a: int = 77, max_angle_a: int = 170,
+                 window_size: int = 10, offset_a: int = 0, offset_b: int = 0, min_angle_a: int = 77, max_angle_a: int = 170,
                  min_angle_b: int = 70, max_angle_b: int = 160, min_interval: float = 1,
                  device: Device = "cpu") -> None:
         Camera.__init__(self, roi_size, upside_down=True)

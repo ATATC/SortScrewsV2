@@ -46,7 +46,7 @@ class Sorter(Camera, HasDevice):
         self.confidence_window.append(confidence)
         self.class_id_window.append(class_id)
         class_id_match_ratio = sum(1 for cid in self.class_id_window if cid == class_id) / len(self.class_id_window)
-        return np.percentile(self.confidence_window, 90) > .8 and class_id_match_ratio >= .75
+        return np.percentile(self.confidence_window, 90) > .9 and class_id_match_ratio >= .75
 
     def calibrate(self, device_id: Literal["A", "B"], angle: int) -> int:
         return angle + (self.offset_a if device_id == "A" else self.offset_b)
